@@ -68,7 +68,8 @@ def playerStandings():
     """
     conn = connect()
     c = conn.cursor()
-    c.execute("SELECT id_player, points, matches, fullname FROM view_points INNER JOIN players ON id_player = id ORDER BY points DESC;")
+    c.execute("SELECT id_player, points, matches, fullname FROM view_points INNER JOIN players ON id_player = id \
+        ORDER BY points DESC, matches DESC ;")
     rows = c.fetchall()
     conn.close()
     return [(id_player, fullname, int(points), int(matches)) for id_player, points, matches, fullname in rows] 
@@ -84,10 +85,8 @@ def reportMatch(draw, matchN, winner, loser):
     """
     conn = connect()
     c = conn.cursor()
-    if draw and (loser is not None):
+    if draw:
         args = [(winner, matchN, "Draw", False), (loser, matchN, "Draw", False)]
-    elif not draw and (loser is None):
-        args = [(winner, matchN, "Bye", True)]
     else:
         args = [(winner, matchN, "Win", False), (loser, matchN, "Lose", False)]
     records_template = ','.join(['%s'] * len(args))
@@ -121,16 +120,8 @@ def swissPairings():
     """
     plyrs = playerStandings()
     
-    # pairs = [(id_player, fullname, [(id_player, fullname, points) for id_player, fullname, points in plyrs]
-    
     plyrs = zip([row[0] for row in plyrs], [row[1] for row in plyrs])
-    # if len(plyrs)%2 == 1:
-    #     plyrs.append(None)
+    
     return [(plyrs[i][0],plyrs[i][1],plyrs[i+1][0],plyrs[i+1][1]) for i in range(0, len(plyrs), 2)]
-    #res = [(plyrs[i], plyrs[i+1]) for i in range(0, len(plyrs), 2)]
-    # return [(y[0][0:2], y[1][0:2]) for y in [(plyrs[i], plyrs[i+1]) for i in range(0, len(plyrs), 2)]]
-    # while there are players who don\'t yet have opponents:
-    #     playerA = highest ranked player without an opponent
-    #     playerB = highest ranked player without an opponent who has not played playerA
-    #     pairs.append(playerA, playerB)
+  
 

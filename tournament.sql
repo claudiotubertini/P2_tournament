@@ -19,9 +19,9 @@ CREATE TABLE results (	id_player int references players(id) ON DELETE CASCADE,
 						id_match int references matches(id) ON DELETE CASCADE,
 						result text,
                         byeresult boolean
-						-- CONSTRAINT result_check CHECK ((((result = 'Win'::text) OR (result = 'Draw'::text)) OR (result = 'Lose'::text)) OR (result = 'Bye'::text))
+						CONSTRAINT result_check CHECK ((((result = 'Win'::text) OR (result = 'Draw'::text)) OR (result = 'Lose'::text)))
 						);
-CREATE UNIQUE INDEX tests_bye_results ON results (id_player, result) WHERE result = 'Bye';
+--CREATE UNIQUE INDEX tests_bye_results ON results (id_player, result) WHERE result = 'Bye';
 --CREATE DOMAIN result VARCHAR(10) CHECK (UPPER(VALUE) IN ('WIN', 'DRAW', 'LOSE', 'BYE'));
 
 CREATE OR REPLACE VIEW view_points AS 
@@ -29,7 +29,7 @@ CREATE OR REPLACE VIEW view_points AS
         CASE WHEN result='Win' THEN 2
             WHEN result='Draw' THEN 1
             WHEN result='Lose' THEN 0
-            WHEN result='Bye' THEN 2
+            #WHEN result='Bye' THEN 2
             ELSE 0
         END) AS points, COUNT(id_match) AS matches
     FROM results
